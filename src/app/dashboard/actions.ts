@@ -6,15 +6,15 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
 export async function createProduct(formData: FormData) {
-  // 1. Quem é o dono deste produto? (Pegamos do Cookie seguro)
+  // 1. Who is the owner of this product? (We get it from the secure cookie)
   const cookieStore = await cookies();
   const sellerId = cookieStore.get('seller_id')?.value;
 
   if (!sellerId) {
-    redirect('/login'); // Se não tiver logado, expulsa
+    redirect('/login'); // If not logged in, kick the user out
   }
 
-  // 2. Pegar os dados do formulário
+  // 2. Get the form data
   const name = formData.get('name') as string;
   const price = formData.get('price') as string;
   const description = formData.get('description') as string;
@@ -22,7 +22,7 @@ export async function createProduct(formData: FormData) {
   const stock = formData.get('stock') as string;
   const imageUrl = formData.get('imageUrl') as string;
 
-  // 3. Inserir no Banco de Dados
+  // 3. Insert into the database
   try {
     await query(
       `INSERT INTO products (seller_id, category_id, name, price, description, stock_quantity, image_url)
@@ -30,27 +30,26 @@ export async function createProduct(formData: FormData) {
       [sellerId, categoryId, name, price, description, stock, imageUrl]
     );
     
-    // Importante: Avisar o Next.js que a Home Page e o Dashboard mudaram (para atualizar o cache)
+    // Important: Notify Next.js that the Home Page and Dashboard have changed (to refresh the cache)
     revalidatePath('/');
     revalidatePath('/dashboard');
 
   } catch (error) {
-    console.error('Erro ao criar produto:', error);
+    console.error('Error creating product:', error);
     return { success: false, message: 'Failed to add product.' };
   }
 
-  // 4. Voltar para o Dashboard
+  // 4. Redirect back to the Dashboard
   redirect('/dashboard?success=true');
 }
 
-
 export async function logout() {
-  // 1. Acessar os cookies
+  // 1. Access the cookies
   const cookieStore = await cookies();
   
-  // 2. Deletar o cookie de sessão
+  // 2. Delete the session cookie
   cookieStore.delete('seller_id');
   
-  // 3. Redirecionar o usuário para a Home Page
+  // 3. Redirect the user to the Home Page
   redirect('/');
 }

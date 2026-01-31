@@ -2,7 +2,7 @@
 
 import { query } from '@/lib/db';
 import bcrypt from 'bcrypt';
-import { cookies } from 'next/headers'; // Necessário para criar a "sessão"
+import { cookies } from 'next/headers'; // Required to create the "session"
 import { redirect } from 'next/navigation';
 
 export async function loginSeller(formData: FormData) {
@@ -14,31 +14,38 @@ export async function loginSeller(formData: FormData) {
   }
 
   try {
-    // 1. Buscar o usuário pelo email
-    const result = await query('SELECT * FROM sellers WHERE email = $1', [email]);
+    // 1. Fetch the user by email
+    const result = await query(
+      'SELECT * FROM sellers WHERE email = $1',
+      [email]
+    );
     const user = result.rows[0];
 
-    // Se não achar o usuário, retornamos erro genérico (segurança)
+    // If the user is not found, return a generic error (security)
     if (!user) {
       return { success: false, message: 'Invalid credentials.' };
     }
 
-    // 2. Comparar a senha digitada com o Hash do banco
-    // O bcrypt faz a mágica de comparar "123456" com "$2b$10$..."
-    const passwordMatch = await bcrypt.compare(password, user.password_hash);
+    // 2. Compare the entered password with the hash stored in the database
+    // bcrypt performs the magic of comparing "123456" with "$2b$10$..."
+    const passwordMatch = await bcrypt.compare(
+      password,
+      user.password_hash
+    );
 
     if (!passwordMatch) {
       return { success: false, message: 'Invalid credentials.' };
     }
 
-    // 3. Criar a Sessão (Cookie)
-    // Aqui estamos a guardar o ID do usuário num cookie seguro
-    // Nota: Em produção real, usaríamos bibliotecas como Auth.js, mas isto serve para aprender o fluxo.
+    // 3. Create the session (cookie)
+    // Here we store the user ID in a secure cookie
+    // Note: In real production apps, we would use libraries like Auth.js,
+    // but this is enough to understand the authentication flow.
     const sessionCookie = await cookies();
     sessionCookie.set('seller_id', user.seller_id.toString(), {
-      httpOnly: true, // O JavaScript do navegador não consegue ler (segurança)
+      httpOnly: true, // Browser JavaScript cannot read it (security)
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 7, // 1 semana de duração
+      maxAge: 60 * 60 * 24 * 7, // 1 week duration
       path: '/',
     });
 
@@ -47,6 +54,6 @@ export async function loginSeller(formData: FormData) {
     return { success: false, message: 'Something went wrong.' };
   }
 
-  // 4. Redirecionar para o Painel de Controlo (Dashboard)
+  // 4. Redirect to the Dashboard
   redirect('/dashboard');
 }

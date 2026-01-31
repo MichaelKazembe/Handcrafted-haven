@@ -1,5 +1,5 @@
 import React from 'react';
-import { query } from '@/lib/db'; // Se der erro aqui, use '../lib/db' ou '../../lib/db'
+import { query } from '@/lib/db'; // If you get an error here, try '../lib/db' or '../../lib/db'
 
 type ProductDetail = {
   product_id: number;
@@ -9,11 +9,11 @@ type ProductDetail = {
   stock_quantity: number;
   image_url: string | null;
   store_name: string;
-  seller_email: string; // Adicionei o email para simular contato
+  seller_email: string; // Added email to simulate contact
   category_name: string;
 };
 
-// Esta função busca UM produto específico pelo ID
+// This function fetches ONE specific product by ID
 async function getProductById(id: string) {
   const sql = `
     SELECT 
@@ -27,22 +27,22 @@ async function getProductById(id: string) {
     WHERE p.product_id = $1
   `;
   
-  // O $1 será substituído pelo 'id' de forma segura
+  // $1 will be safely replaced with the provided 'id'
   const result = await query(sql, [id]);
   
-  // Retorna o primeiro item encontrado (ou undefined se não achar nada)
+  // Return the first item found (or undefined if nothing is found)
   return result.rows[0] as ProductDetail;
 }
 
-// No Next.js 15/16, 'params' precisa ser tratado como uma Promise em componentes assíncronos
+// In Next.js 15/16, 'params' must be handled as a Promise in async components
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
-  // 1. "Desembrulhamos" os parâmetros da URL
+  // 1. "Unwrap" the URL parameters
   const { id } = await params;
   
-  // 2. Buscamos os dados no banco
+  // 2. Fetch the data from the database
   const product = await getProductById(id);
 
-  // 3. Se o produto não existir (ex: id 999), mostramos erro
+  // 3. If the product does not exist (e.g. id 999), show an error
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -54,14 +54,14 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   return (
     <main className="min-h-screen bg-gray-50 font-sans">
       
-      {/* Botão de Voltar Simples */}
+      {/* Simple Back Button */}
       <div className="max-w-6xl mx-auto p-6">
         <a href="/" className="text-blue-600 hover:underline">← Back to Home</a>
       </div>
 
       <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row">
         
-        {/* Lado Esquerdo: Imagem */}
+        {/* Left Side: Image */}
         <div className="md:w-1/2 bg-gray-200 min-h-[400px] flex items-center justify-center">
            {product.image_url && product.image_url.startsWith('http') ? (
               <img 
@@ -74,7 +74,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
            )}
         </div>
 
-        {/* Lado Direito: Detalhes */}
+        {/* Right Side: Details */}
         <div className="md:w-1/2 p-10 flex flex-col justify-center">
           <span className="text-sm font-bold text-blue-600 uppercase tracking-wide mb-2">
             {product.category_name}
@@ -90,8 +90,12 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           </div>
 
           <div className="border-t border-b border-gray-200 py-4 mb-8">
-            <p className="text-sm text-gray-500">Sold by: <strong className="text-gray-800">{product.store_name}</strong></p>
-            <p className="text-sm text-gray-500">Stock: <strong className="text-gray-800">{product.stock_quantity} units available</strong></p>
+            <p className="text-sm text-gray-500">
+              Sold by: <strong className="text-gray-800">{product.store_name}</strong>
+            </p>
+            <p className="text-sm text-gray-500">
+              Stock: <strong className="text-gray-800">{product.stock_quantity} units available</strong>
+            </p>
           </div>
 
           <button className="bg-orange-400 text-white font-bold py-4 px-8 rounded-lg hover:bg-orange-500 transition-colors shadow-md text-lg">

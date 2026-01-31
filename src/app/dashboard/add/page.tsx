@@ -1,7 +1,7 @@
 import { query } from '@/lib/db';
-import { createProduct } from '../actions'; // Importamos a ação que criamos acima
+import { createProduct } from '../actions'; // We import the action we created above
 
-// Função para buscar categorias (para preencher o menu dropdown)
+// Function to fetch categories (to populate the dropdown menu)
 async function getCategories() {
   const result = await query('SELECT * FROM categories ORDER BY name ASC');
   return result.rows;
@@ -19,17 +19,17 @@ export default async function AddProductPage() {
           <a href="/dashboard" className="text-sm text-gray-500 hover:text-gray-800">Cancel</a>
         </div>
 
-        {/* O action={createProduct} conecta o form direto ao servidor */}
+        {/* The action={createProduct} connects the form directly to the server */}
         <form action={createProduct} className="flex flex-col gap-6">
           
-          {/* Nome do Produto */}
+          {/* Product Name */}
           <div>
             <label className="block text-gray-700 font-bold mb-2">Product Name</label>
             <input name="name" required className="w-full border p-3 rounded bg-gray-50" placeholder="Ex: Handpainted Mug" />
           </div>
 
           <div className="flex gap-4">
-            {/* Preço */}
+            {/* Price */}
             <div className="w-1/2">
               <label className="block text-gray-700 font-bold mb-2">Price ($)</label>
               <input name="price" type="number" step="0.01" required className="w-full border p-3 rounded bg-gray-50" placeholder="25.00" />
@@ -42,7 +42,7 @@ export default async function AddProductPage() {
             </div>
           </div>
 
-          {/* Categoria (Dropdown Dinâmico) */}
+          {/* Category (Dynamic Dropdown) */}
           <div>
             <label className="block text-gray-700 font-bold mb-2">Category</label>
             <select name="category" required className="w-full border p-3 rounded bg-gray-50">
@@ -55,20 +55,31 @@ export default async function AddProductPage() {
             </select>
           </div>
 
-          {/* Imagem URL */}
+          {/* Image URL */}
           <div>
             <label className="block text-gray-700 font-bold mb-2">Image URL</label>
             <input name="imageUrl" type="url" required className="w-full border p-3 rounded bg-gray-50" placeholder="https://images.unsplash.com/..." />
-            <p className="text-xs text-gray-500 mt-1">Tip: Copy an image link from Unsplash.com for testing.</p>
+            <p className="text-xs text-gray-500 mt-1">
+              Tip: Copy an image link from Unsplash.com for testing.
+            </p>
           </div>
 
-          {/* Descrição */}
+          {/* Description */}
           <div>
             <label className="block text-gray-700 font-bold mb-2">Description</label>
-            <textarea name="description" rows={4} required className="w-full border p-3 rounded bg-gray-50" placeholder="Tell the story of your product..."></textarea>
+            <textarea
+              name="description"
+              rows={4}
+              required
+              className="w-full border p-3 rounded bg-gray-50"
+              placeholder="Tell the story of your product..."
+            ></textarea>
           </div>
 
-          <button type="submit" className="bg-green-600 text-white font-bold py-4 rounded hover:bg-green-700 transition">
+          <button
+            type="submit"
+            className="bg-green-600 text-white font-bold py-4 rounded hover:bg-green-700 transition"
+          >
             Publish Product
           </button>
         </form>

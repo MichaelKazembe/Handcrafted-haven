@@ -20,7 +20,7 @@ export default async function AddProductPage() {
         </div>
 
         {/* The action={createProduct} connects the form directly to the server */}
-        <form action={createProduct} className="flex flex-col gap-6">
+        <form action={createProduct as any} className="flex flex-col gap-6">
           
           {/* Product Name */}
           <div>

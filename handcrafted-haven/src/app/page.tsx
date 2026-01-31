@@ -1,6 +1,48 @@
 import React from 'react';
+import { query } from '../lib/db'; // Importamos a conexão que criamos
 
-export default function Home() {
+// 1. Definimos o formato dos dados que vêm do banco
+type Product = {
+  product_id: number;
+  name: string;
+  price: string;
+  image_url: string | null;
+  store_name: string;
+  category_name: string;
+};
+
+// 2. Função para buscar os dados no PostgreSQL
+async function getProducts() {
+  // Vamos buscar produtos e o nome da loja do vendedor
+  // O LIMIT 6 garante que o layout não quebre se tivermos mil produtos
+  const sql = `
+    SELECT 
+      p.product_id, 
+      p.name, 
+      p.price, 
+      p.image_url, 
+      s.store_name,
+      c.name as category_name
+    FROM products p
+    JOIN sellers s ON p.seller_id = s.seller_id
+    JOIN categories c ON p.category_id = c.category_id
+    ORDER BY p.created_at DESC
+    LIMIT 6
+  `;
+  
+  try {
+    const result = await query(sql);
+    return result.rows as Product[];
+  } catch (error) {
+    console.error("Erro ao buscar produtos:", error);
+    return []; // Retorna lista vazia se o banco falhar (para não quebrar a página)
+  }
+}
+
+export default async function Home() {
+  // 3. Executamos a busca antes da página carregar
+  const products = await getProducts();
+
   return (
     <main style={styles.main}>
       
@@ -13,10 +55,22 @@ export default function Home() {
           <a href="/categories" style={styles.navLink}>Categories</a>
           <a href="/about" style={styles.navLink}>About</a>
           <a href="/contact" style={styles.navLink}>Contact</a>
+          
+          {/* NOVO ITEM: Botão de Login com destaque */}
+          <a href="/login" style={{
+            ...styles.navLink, 
+            border: '1px solid white', 
+            padding: '8px 15px', 
+            borderRadius: '4px',
+            marginLeft: '10px'
+          }}>
+            Seller Login
+          </a>
+
         </div>
       </nav>
 
-      {/* Hero Section with Background */}
+      {/* Hero Section */}
       <section style={styles.hero}>
         <div style={styles.heroOverlay}>
           <h2 style={styles.heroTitle}>Where Handmade Stories Come to Life</h2>
@@ -31,7 +85,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Category Cards Section */}
+      {/* Category Cards Section (Mantido Estático por enquanto) */}
       <section style={styles.categorySection}>
         <h2 style={styles.sectionTitle}>Shop by Category</h2>
         <div style={styles.categoryGrid}>
@@ -58,47 +112,48 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Products Grid */}
+      {/* Featured Products Grid - AGORA DINÂMICO */}
       <section style={styles.productsSection}>
         <h2 style={styles.sectionTitle}>Featured Products</h2>
-        <div style={styles.productGrid}>
-          <div style={styles.productCard}>
-            <div style={styles.productImage}>📦</div>
-            <h3 style={styles.productTitle}>Ceramic Vase</h3>
-            <p style={styles.productPrice}>$45.00</p>
-            <button style={styles.productBtn}>View Details</button>
+        
+        {/* Se não houver produtos, mostramos um aviso amigável */}
+        {products.length === 0 ? (
+          <div style={{textAlign: 'center', padding: '20px', color: '#666'}}>
+            <p>No products found properly. Check your database connection.</p>
           </div>
-          <div style={styles.productCard}>
-            <div style={styles.productImage}>📦</div>
-            <h3 style={styles.productTitle}>Handwoven Basket</h3>
-            <p style={styles.productPrice}>$32.00</p>
-            <button style={styles.productBtn}>View Details</button>
+        ) : (
+          <div style={styles.productGrid}>
+            {/* Aqui fazemos o LOOP pelos produtos do banco */}
+            {products.map((product) => (
+              <div key={product.product_id} style={styles.productCard}>
+                <div style={styles.productImage}>
+                  {/* Se tiver URL de imagem válida, tenta mostrar, senão mostra emoji */}
+                  {product.image_url && product.image_url.startsWith('http') ? (
+                    <img 
+                      src={product.image_url} 
+                      alt={product.name} 
+                      style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px'}}
+                    />
+                  ) : (
+                    <span style={{fontSize: '50px'}}>📦</span>
+                  )}
+                </div>
+                
+                <h3 style={styles.productTitle}>{product.name}</h3>
+                
+                {/* Detalhes extras vindos do JOIN */}
+                <p style={{fontSize: '12px', color: '#888', marginBottom: '5px'}}>
+                   {product.category_name} by {product.store_name}
+                </p>
+
+                <p style={styles.productPrice}>${product.price}</p>
+                <a href={`/products/${product.product_id}`} style={{...styles.productBtn, textDecoration: 'none', display: 'inline-block'}}>
+                  View Details
+                </a>
+                </div>
+              ))}
           </div>
-          <div style={styles.productCard}>
-            <div style={styles.productImage}>📦</div>
-            <h3 style={styles.productTitle}>Silver Necklace</h3>
-            <p style={styles.productPrice}>$68.00</p>
-            <button style={styles.productBtn}>View Details</button>
-          </div>
-          <div style={styles.productCard}>
-            <div style={styles.productImage}>📦</div>
-            <h3 style={styles.productTitle}>Wall Art Print</h3>
-            <p style={styles.productPrice}>$55.00</p>
-            <button style={styles.productBtn}>View Details</button>
-          </div>
-          <div style={styles.productCard}>
-            <div style={styles.productImage}>📦</div>
-            <h3 style={styles.productTitle}>Knitted Scarf</h3>
-            <p style={styles.productPrice}>$38.00</p>
-            <button style={styles.productBtn}>View Details</button>
-          </div>
-          <div style={styles.productCard}>
-            <div style={styles.productImage}>📦</div>
-            <h3 style={styles.productTitle}>Clay Bowl Set</h3>
-            <p style={styles.productPrice}>$52.00</p>
-            <button style={styles.productBtn}>View Details</button>
-          </div>
-        </div>
+        )}
       </section>
 
       {/* Footer */}
@@ -129,7 +184,8 @@ export default function Home() {
   );
 }
 
-const styles = {
+// Mantive seus estilos exatamente iguais, apenas adicionei um tipo para o TypeScript não reclamar
+const styles: { [key: string]: React.CSSProperties } = {
   main: {
     fontFamily: "Arial, sans-serif",
     backgroundColor: "#F5F5F5",
@@ -170,7 +226,7 @@ const styles = {
     justifyContent: "center",
   },
   heroOverlay: {
-    textAlign: "center" as const,
+    textAlign: "center",
     padding: "80px 20px",
     maxWidth: "900px",
   },
@@ -189,7 +245,7 @@ const styles = {
     display: "flex",
     gap: "15px",
     justifyContent: "center",
-    flexWrap: "wrap" as const,
+    flexWrap: "wrap",
   },
   primaryBtn: {
     backgroundColor: "#FFB74D",
@@ -220,7 +276,7 @@ const styles = {
   },
   sectionTitle: {
     fontSize: "32px",
-    textAlign: "center" as const,
+    textAlign: "center",
     marginBottom: "40px",
     color: "#333",
   },
@@ -236,7 +292,7 @@ const styles = {
     backgroundColor: "#FAFAFA",
     padding: "30px",
     borderRadius: "8px",
-    textAlign: "center" as const,
+    textAlign: "center",
     border: "1px solid #E0E0E0",
     transition: "transform 0.3s",
     cursor: "pointer",
@@ -266,12 +322,12 @@ const styles = {
     backgroundColor: "white",
     borderRadius: "8px",
     padding: "20px",
-    textAlign: "center" as const,
+    textAlign: "center",
     border: "1px solid #E0E0E0",
     transition: "box-shadow 0.3s",
   },
   productImage: {
-    fontSize: "60px",
+    // fontSize: "60px", // Removido para acomodar imagens reais se houver
     height: "200px",
     display: "flex",
     alignItems: "center",
@@ -279,6 +335,7 @@ const styles = {
     backgroundColor: "#F5F5F5",
     borderRadius: "6px",
     marginBottom: "15px",
+    overflow: "hidden"
   },
   productTitle: {
     fontSize: "18px",
@@ -316,7 +373,7 @@ const styles = {
   },
   footerSection: {
     display: "flex",
-    flexDirection: "column" as const,
+    flexDirection: "column",
     gap: "10px",
   },
   footerTitle: {
@@ -338,7 +395,7 @@ const styles = {
   footerBottom: {
     borderTop: "1px solid #8D6E63",
     paddingTop: "20px",
-    textAlign: "center" as const,
+    textAlign: "center",
     fontSize: "14px",
     color: "#E0E0E0",
   },

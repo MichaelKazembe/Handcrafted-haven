@@ -1,38 +1,46 @@
-import React from 'react';
+import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer style={styles.footer}>
-      <div style={styles.footerContent}>
-        <div style={styles.footerSection}>
-          <h4 style={styles.footerTitle}>Handcrafted Haven</h4>
-          <p style={styles.footerText}>Supporting local artisans since 2025</p>
+    <footer className="bg-[#6D4C41] text-white mt-auto px-10 pt-10 pb-5">
+      <div className="max-w-6xl mx-auto grid gap-8 md:grid-cols-3 mb-8">
+        
+        {/* Brand */}
+        <div className="flex flex-col gap-2">
+          <h4 className="text-lg text-[#FFB74D] font-semibold">
+            Handcrafted Haven
+          </h4>
+          <p className="text-sm text-gray-200">
+            Supporting local artisans since 2025
+          </p>
         </div>
-        <div style={styles.footerSection}>
-          <h4 style={styles.footerTitle}>Quick Links</h4>
-          <a href="/about" style={styles.footerLink}>About Us</a>
-          <a href="/products" style={styles.footerLink}>Products</a>
-          <a href="/contact" style={styles.footerLink}>Contact</a>
+
+        {/* Links */}
+        <div className="flex flex-col gap-2">
+          <h4 className="text-lg text-[#FFB74D] font-semibold">Quick Links</h4>
+          <Link href="/about" className="text-sm text-gray-200 hover:text-white transition">
+            About Us
+          </Link>
+          <Link href="/products" className="text-sm text-gray-200 hover:text-white transition">
+            Products
+          </Link>
+          <Link href="/contact" className="text-sm text-gray-200 hover:text-white transition">
+            Contact
+          </Link>
         </div>
-        <div style={styles.footerSection}>
-          <h4 style={styles.footerTitle}>Contact</h4>
-          <p style={styles.footerText}>Email: info@handcraftedhaven.com</p>
-          <p style={styles.footerText}>Phone: (555) 123-4567</p>
+
+        {/* Contact */}
+        <div className="flex flex-col gap-2">
+          <h4 className="text-lg text-[#FFB74D] font-semibold">Contact</h4>
+          <p className="text-sm text-gray-200">Email: info@handcraftedhaven.com</p>
+          <p className="text-sm text-gray-200">Phone: (555) 123-4567</p>
         </div>
       </div>
-      <div style={styles.footerBottom}>
-        <p>© 2025 Handcrafted Haven. All rights reserved.</p>
+
+      {/* Bottom */}
+      <div className="border-t border-[#8D6E63] pt-5 text-center text-sm text-gray-200">
+        © 2026 Handcrafted Haven. All rights reserved.
       </div>
     </footer>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  footer: { backgroundColor: "#6D4C41", color: "white", padding: "40px 40px 20px", marginTop: "auto" },
-  footerContent: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "30px", maxWidth: "1200px", margin: "0 auto 30px" },
-  footerSection: { display: "flex", flexDirection: "column", gap: "10px" },
-  footerTitle: { fontSize: "18px", marginBottom: "10px", color: "#FFB74D" },
-  footerText: { fontSize: "14px", color: "#E0E0E0", margin: "5px 0" },
-  footerLink: { fontSize: "14px", color: "#E0E0E0", textDecoration: "none", margin: "5px 0" },
-  footerBottom: { borderTop: "1px solid #8D6E63", paddingTop: "20px", textAlign: "center", fontSize: "14px", color: "#E0E0E0" },
-};

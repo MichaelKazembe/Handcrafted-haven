@@ -1,6 +1,6 @@
 'use server'
 
-import { query } from '@/lib/db';
+import { query } from '../../lib/db';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';

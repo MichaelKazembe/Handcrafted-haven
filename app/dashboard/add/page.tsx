@@ -1,4 +1,4 @@
-import { query } from '@/lib/db';
+import { query } from '../../../lib/db';
 import { createProduct } from '../actions'; // We import the action we created above
 
 // Function to fetch categories (to populate the dropdown menu)

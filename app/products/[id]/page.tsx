@@ -1,5 +1,5 @@
 import React from 'react';
-import { query } from '@/lib/db'; // If you get an error here, try '../lib/db' or '../../lib/db'
+import { query } from '../../../lib/db'; // If you get an error here, try '../lib/db' or '../../lib/db'
 
 type ProductDetail = {
   product_id: number;

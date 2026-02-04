@@ -1,6 +1,6 @@
 'use server'
 
-import { query } from '@/lib/db';
+import { query } from '../../lib/db';
 import bcrypt from 'bcrypt';
 import { cookies } from 'next/headers'; // Required to create the "session"
 import { redirect } from 'next/navigation';

@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { query } from '@/lib/db';
+import { query } from '../../lib/db';
 import { logout } from './actions';
 
 export default async function DashboardPage() {

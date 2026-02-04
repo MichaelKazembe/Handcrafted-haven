@@ -1,6 +1,6 @@
 'use server'
 
-import { query } from '@/lib/db'; 
+import { query } from '../../../lib/db'; 
 import nodemailer from 'nodemailer';
 import { redirect } from 'next/navigation';
 

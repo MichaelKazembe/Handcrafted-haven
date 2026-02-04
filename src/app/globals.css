@@ -83,3 +83,12 @@
     text-align: center;      /* Centraliza o texto */
   }
 }
+
+categoryImage {
+  width: '80px',
+  }
+
+
+categoryImage {
+  height: '80px',
+  }

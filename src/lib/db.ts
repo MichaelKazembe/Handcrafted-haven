@@ -10,11 +10,6 @@ const pool = new Pool({
   port: 5432,                 // The default port
 });
 
-// Debug: Let's check in the terminal if the password is being recognized as text
-console.log('--- CONNECTION ATTEMPT ---');
-console.log('Password type is:', typeof 'admin'); // Should display 'string'
-console.log('--------------------------');
-
 export const query = (text: string, params?: any[]) => {
   return pool.query(text, params);
 };

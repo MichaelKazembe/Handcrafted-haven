@@ -70,3 +70,25 @@
     color: #6b7280 !important; /* Gray-500 for readability */
   }
 }
+
+@layer utilities {
+  /* * Classe personalizada para centralizar conteúdo em Cards
+   * Uso: <div className="card-center">...</div>
+   */
+  .card-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;     /* Centraliza horizontalmente */
+    justify-content: center; /* Centraliza verticalmente */
+    text-align: center;      /* Centraliza o texto */
+  }
+}
+
+categoryImage {
+  width: '80px',
+  }
+
+
+categoryImage {
+  height: '80px',
+  }

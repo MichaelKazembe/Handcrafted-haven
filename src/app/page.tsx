@@ -1,5 +1,6 @@
 import React from 'react';
 import { query } from '../lib/db';
+import Image from 'next/image';
 
 type Product = {
   product_id: number;
@@ -49,30 +50,77 @@ export default async function Home() {
 
       {/* Category Cards Section */}
       <section style={styles.categorySection}>
-        <h2 style={styles.sectionTitle}>Shop by Category</h2>
-        <div style={styles.categoryGrid}>
-          <div style={styles.categoryCard}>
-            <div style={styles.categoryIcon}>🏺</div>
-            <h3 style={styles.categoryTitle}>Pottery</h3>
-            <p style={styles.categoryDesc}>Handmade ceramics and pottery</p>
-          </div>
-          <div style={styles.categoryCard}>
-            <div style={styles.categoryIcon}>💍</div>
-            <h3 style={styles.categoryTitle}>Jewelry</h3>
-            <p style={styles.categoryDesc}>Unique handcrafted accessories</p>
-          </div>
-          <div style={styles.categoryCard}>
-            <div style={styles.categoryIcon}>🧶</div>
-            <h3 style={styles.categoryTitle}>Textiles</h3>
-            <p style={styles.categoryDesc}>Woven and knitted goods</p>
-          </div>
-          <div style={styles.categoryCard}>
-            <div style={styles.categoryIcon}>🖼️</div>
-            <h3 style={styles.categoryTitle}>Art</h3>
-            <p style={styles.categoryDesc}>Original paintings and prints</p>
-          </div>
-        </div>
-      </section>
+  <h2 style={styles.sectionTitle}>Shop by Category</h2>
+  <div style={styles.categoryGrid}>
+    
+    {/* Card 1: Pottery */}
+    <div style={styles.categoryCard}
+    className="card-center">
+      <div style={styles.imageContainer}>
+        <Image 
+          src="/categories/pottery.png" // Caminho começa na pasta public
+          alt="Pottery"
+          width={80} 
+          height={80}
+          style={styles.categoryImage}
+        />
+      </div>
+      <h3 style={styles.categoryTitle}>Pottery</h3>
+      <p style={styles.categoryDesc}>Handmade ceramics and pottery</p>
+    </div>
+
+    {/* Card 2: Jewelry */}
+    <div style={styles.categoryCard}
+    className="card-center">
+      <div style={styles.imageContainer}>
+        <Image 
+          src="/categories/jewerly.png" 
+          alt="Jewelry"
+          width={80} 
+          height={80}
+          style={styles.categoryImage}
+        />
+      </div>
+      <h3 style={styles.categoryTitle}>Jewelry</h3>
+      <p style={styles.categoryDesc}>Unique handcrafted accessories</p>
+    </div>
+
+    {/* Card 3: Textiles */}
+    <div 
+  style={styles.categoryCard} 
+  className="card-center" 
+>
+  <div style={styles.imageContainer}>
+    <Image 
+      src="/categories/textile.png" 
+      alt="Textiles"
+      width={80} 
+      height={80}
+      style={styles.categoryImage}
+    />
+  </div>
+  <h3 style={styles.categoryTitle}>Textiles</h3>
+  <p style={styles.categoryDesc}>Woven and knitted goods</p>
+</div>
+
+    {/* Card 4: Art */}
+    <div style={styles.categoryCard}
+    className="card-center">
+      <div style={styles.imageContainer}>
+        <Image 
+          src="/categories/art.png" 
+          alt="Art"
+          width={80} 
+          height={80}
+          style={styles.categoryImage}
+        />
+      </div>
+      <h3 style={styles.categoryTitle}>Art</h3>
+      <p style={styles.categoryDesc}>Original paintings and prints</p>
+    </div>
+
+  </div>
+</section>
 
       {/* Featured Products Grid */}
       <section style={styles.productsSection}>

@@ -1,6 +1,6 @@
 'use server'
 
-import { query } from '@/lib/db'; // or '../lib/db' depending on your folder structure
+import { query } from '../../lib/db'; // or '../lib/db' depending on your folder structure
 import bcrypt from 'bcrypt';
 import { redirect } from 'next/navigation';
 

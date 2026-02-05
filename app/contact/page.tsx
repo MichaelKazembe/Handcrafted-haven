@@ -1,5 +1,5 @@
 import React from 'react';
-import { sendContactMessage } from '@/app/contact/actions/sendContact';
+import { sendContactMessage } from './actions/sendContact';
 
 export default function ContactPage() {
   return (

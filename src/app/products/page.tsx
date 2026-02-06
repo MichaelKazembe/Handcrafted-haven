@@ -125,7 +125,7 @@ function ProductGrid() {
                   ${product.price.toFixed(2)}
                 </span>
                 {product.stock_quantity <= 5 && (
-                  <Badge variant="warning" size="sm">
+                  <Badge variant="warning">
                     Low Stock
                   </Badge>
                 )}

@@ -9,6 +9,7 @@ export async function sendContactMessage(formData: FormData) {
   
   const name = formData.get('name') as string;
   const email = formData.get('email') as string;
+  const subject = formData.get('subject') as string;
   const message = formData.get('message') as string;
 
   if (!name || !email || !message) {
@@ -18,7 +19,7 @@ export async function sendContactMessage(formData: FormData) {
   try {
     const { error } = await supabaseClient
       .from('contacts')
-      .insert([{ name, email, message }]);
+      .insert([{ name, email, subject, message }]);
 
     if (error) {
       console.error('Supabase error:', error);

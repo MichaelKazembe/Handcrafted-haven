@@ -1,23 +1,23 @@
-'use client'
+"use client";
 
-import { useState } from 'react';
-import { registerSeller } from './actions'; // We import the function from step 2
+import { useState } from "react";
+import { registerSeller } from "./actions"; // We import the function from step 2
 
 export default function SignupPage() {
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Function that handles form submission
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); // Prevents the page from reloading
-    setError('');
+    setError("");
     setLoading(true);
 
     const formData = new FormData(event.currentTarget);
-    
+
     // Call our Server Action
     const result = await registerSeller(formData);
-    
+
     // If registerSeller returns something (it means there was an error or no redirect)
     if (result?.success === false) {
       setError(result.message);
@@ -31,7 +31,7 @@ export default function SignupPage() {
         <h1 className="text-2xl font-bold text-center text-amber-900 mb-6">
           Join as an Artisan
         </h1>
-        
+
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
             {error}
@@ -39,7 +39,6 @@ export default function SignupPage() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          
           <div className="flex gap-4">
             <div className="w-1/2">
               <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -95,7 +94,7 @@ export default function SignupPage() {
               Phone Number
             </label>
             <input
-              name="phone"
+              name="phone_number"
               type="tel"
               className="w-full border p-2 rounded"
               placeholder="+351 912 345 678"
@@ -115,22 +114,22 @@ export default function SignupPage() {
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="bg-amber-800 text-white font-bold py-3 px-4 rounded hover:bg-amber-900 transition duration-300 mt-4 disabled:opacity-50"
           >
-            {loading ? 'Creating Account...' : 'Sign Up'}
+            {loading ? "Creating Account..." : "Sign Up"}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-600 mt-4">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <a href="/login" className="text-amber-800 font-bold">
             Log in
           </a>
         </p>
-        
+
         <div className="text-center mt-4">
           <a href="/" className="text-sm text-gray-400 hover:text-gray-600">
             ← Back to Home

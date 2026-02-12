@@ -3,7 +3,7 @@
 // ===========================================
 
 export interface Seller {
-  seller_id: number;
+  seller_id: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -20,7 +20,7 @@ export interface Category {
 
 export interface Product {
   product_id: number;
-  seller_id: number;
+  seller_id: string;
   category_id: number;
   name: string;
   description: string;
@@ -32,14 +32,6 @@ export interface Product {
   store_name?: string;
   seller_email?: string;
   category_name?: string;
-}
-
-export interface Contact {
-  id: number;
-  name: string;
-  email: string;
-  message: string;
-  created_at?: string;
 }
 
 // ===========================================
@@ -57,10 +49,11 @@ export interface SignupFormData {
   email: string;
   password: string;
   storeName: string;
-  phone?: string;
+  phone_number?: string;
 }
 
 export interface ProductFormData {
+  seller_id: string;
   name: string;
   description: string;
   price: number;
@@ -69,10 +62,22 @@ export interface ProductFormData {
   image_url?: string;
 }
 
-export interface ContactFormData {
-  name: string;
-  email: string;
-  message: string;
+export interface Review {
+  review_id: number;
+  product_id: number;
+  reviewer_name: string;
+  reviewer_email: string;
+  rating: number;
+  comment?: string;
+  created_at?: string;
+}
+
+export interface ReviewFormData {
+  product_id: number;
+  reviewer_name: string;
+  reviewer_email: string;
+  rating: number;
+  comment?: string;
 }
 
 // ===========================================
@@ -87,7 +92,7 @@ export interface ApiResponse<T = unknown> {
 }
 
 export interface Session {
-  seller_id: number;
+  seller_id: string;
   email: string;
   store_name: string;
 }
@@ -97,8 +102,8 @@ export interface Session {
 // ===========================================
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "outline" | "ghost";
+  size?: "sm" | "md" | "lg";
   isLoading?: boolean;
   children: React.ReactNode;
 }
@@ -122,12 +127,11 @@ export interface CardProps {
 export interface ContainerProps {
   children: React.ReactNode;
   className?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
 export interface SectionProps {
   children: React.ReactNode;
   className?: string;
-  background?: 'white' | 'gray' | 'primary' | 'gradient';
+  background?: "white" | "gray" | "primary" | "gradient";
 }
-

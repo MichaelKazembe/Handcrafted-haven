@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 // Environment variables
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -12,7 +12,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export const createServerClient = () => {
   const serviceRoleKey = process.env.STORAGE_SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceRoleKey) {
-    throw new Error('Service role key is not configured');
+    throw new Error("Service role key is not configured");
   }
   return createClient(supabaseUrl, serviceRoleKey);
 };
@@ -23,9 +23,9 @@ export const db = {
   sellers: {
     findById: async (sellerId: string) => {
       const { data, error } = await supabase
-        .from('sellers')
-        .select('*')
-        .eq('seller_id', sellerId)
+        .from("sellers")
+        .select("*")
+        .eq("seller_id", sellerId)
         .single();
 
       if (error) throw error;
@@ -34,12 +34,12 @@ export const db = {
 
     findByEmail: async (email: string) => {
       const { data, error } = await supabase
-        .from('sellers')
-        .select('seller_id')
-        .eq('email', email)
+        .from("sellers")
+        .select("seller_id")
+        .eq("email", email)
         .single();
 
-      if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "not found"
+      if (error && error.code !== "PGRST116") throw error; // PGRST116 is "not found"
       return data;
     },
 
@@ -52,9 +52,9 @@ export const db = {
       password_hash: string;
     }) => {
       const { data, error } = await supabase
-        .from('sellers')
+        .from("sellers")
         .insert(sellerData)
-        .select('seller_id')
+        .select("seller_id")
         .single();
 
       if (error) throw error;
@@ -66,9 +66,9 @@ export const db = {
   categories: {
     findAll: async () => {
       const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('name');
+        .from("categories")
+        .select("*")
+        .order("name");
 
       if (error) throw error;
       return data;
@@ -78,7 +78,7 @@ export const db = {
   // Products operations
   products: {
     create: async (productData: {
-      seller_id: number;
+      seller_id: string;
       category_id: number;
       name: string;
       description: string;
@@ -87,9 +87,9 @@ export const db = {
       image_url: string;
     }) => {
       const { data, error } = await supabase
-        .from('products')
+        .from("products")
         .insert(productData)
-        .select('*')
+        .select("*")
         .single();
 
       if (error) throw error;
@@ -98,15 +98,17 @@ export const db = {
 
     findBySeller: async (sellerId: string) => {
       const { data, error } = await supabase
-        .from('products')
-        .select(`
+        .from("products")
+        .select(
+          `
           *,
           categories (
             name
           )
-        `)
-        .eq('seller_id', sellerId)
-        .order('created_at', { ascending: false });
+        `,
+        )
+        .eq("seller_id", sellerId)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
@@ -114,8 +116,9 @@ export const db = {
 
     findAll: async () => {
       const { data, error } = await supabase
-        .from('products')
-        .select(`
+        .from("products")
+        .select(
+          `
           *,
           categories (
             name
@@ -123,9 +126,10 @@ export const db = {
           sellers (
             store_name
           )
-        `)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+        `,
+        )
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
@@ -133,8 +137,9 @@ export const db = {
 
     findById: async (productId: string) => {
       const { data, error } = await supabase
-        .from('products')
-        .select(`
+        .from("products")
+        .select(
+          `
           *,
           categories (
             name
@@ -142,8 +147,9 @@ export const db = {
           sellers (
             store_name
           )
-        `)
-        .eq('product_id', productId)
+        `,
+        )
+        .eq("product_id", productId)
         .single();
 
       if (error) throw error;
@@ -152,8 +158,9 @@ export const db = {
 
     findByCategory: async (categoryId: string) => {
       const { data, error } = await supabase
-        .from('products')
-        .select(`
+        .from("products")
+        .select(
+          `
           *,
           categories (
             name
@@ -161,14 +168,14 @@ export const db = {
           sellers (
             store_name
           )
-        `)
-        .eq('category_id', categoryId)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
+        `,
+        )
+        .eq("category_id", categoryId)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
     },
   },
 };
-

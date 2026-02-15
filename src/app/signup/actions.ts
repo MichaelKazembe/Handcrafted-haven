@@ -37,7 +37,7 @@ export async function registerSeller(formData: FormData) {
       last_name: lastName,
       store_name: storeName,
       email,
-      phone_number: phone,
+      phone,
       password_hash: hashedPassword,
     });
 

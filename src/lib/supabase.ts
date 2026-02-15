@@ -48,7 +48,7 @@ export const db = {
       last_name: string;
       store_name: string;
       email: string;
-      phone_number: string;
+      phone: string;
       password_hash: string;
     }) => {
       const { data, error } = await supabase

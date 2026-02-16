@@ -43,12 +43,23 @@ export const db = {
       return data;
     },
 
+    findByEmailWithPassword: async (email: string) => {
+      const { data, error } = await supabase
+        .from("sellers")
+        .select("seller_id, email, password_hash, first_name, store_name")
+        .eq("email", email)
+        .single();
+
+      if (error && error.code !== "PGRST116") throw error;
+      return data;
+    },
+
     create: async (sellerData: {
       first_name: string;
       last_name: string;
       store_name: string;
       email: string;
-      phone: string;
+      phone_number: string;
       password_hash: string;
     }) => {
       const { data, error } = await supabase

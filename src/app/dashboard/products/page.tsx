@@ -1,100 +1,120 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
-import { Card, CardContent, Badge, Button, Input, Textarea } from '@/components/ui';
+import { Card, CardContent, Badge, Button } from '@/components/ui';
 import { 
   Package, 
-  Edit, 
-  Trash2, 
   Search, 
   Plus,
   X,
   Check,
   Image as ImageIcon,
   DollarSign,
-  Tag
+  Tag,
+  Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getProducts, addProduct, deleteProduct, getCategories } from './actions';
 
-// Mock product data
-const initialProducts = [
-  {
-    id: 1,
-    name: 'Hand-Painted Ceramic Mug',
-    description: 'Beautiful hand-painted ceramic mug with unique floral design',
-    price: 35.0,
-    stock: 15,
-    category: 'Pottery',
-    image_url: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400',
-    status: 'active',
-    rating: 4.8,
-    reviews: 24,
-  },
-  {
-    id: 2,
-    name: 'Woven Wool Blanket',
-    description: 'Cozy hand-woven wool blanket in traditional patterns',
-    price: 120.0,
-    stock: 8,
-    category: 'Textiles',
-    image_url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400',
-    status: 'active',
-    rating: 4.9,
-    reviews: 12,
-  },
-  {
-    id: 3,
-    name: 'Silver Handcrafted Ring',
-    description: 'Elegant silver ring with intricate手工 designs',
-    price: 65.0,
-    stock: 20,
-    category: 'Jewelry',
-    image_url: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400',
-    status: 'active',
-    rating: 4.7,
-    reviews: 8,
-  },
-  {
-    id: 4,
-    name: 'Ceramic Flower Vase',
-    description: 'Elegant ceramic vase for fresh or dried flowers',
-    price: 42.0,
-    stock: 10,
-    category: 'Pottery',
-    image_url: 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400',
-    status: 'active',
-    rating: 4.5,
-    reviews: 6,
-  },
-];
+// Types
+interface Category {
+  category_id: number;
+  name: string;
+}
 
-const categories = ['All', 'Pottery', 'Textiles', 'Jewelry', 'Home Decor', 'Accessories'];
+interface Product {
+  product_id: number;
+  name: string;
+  description: string;
+  price: number;
+  stock_quantity: number;
+  category_id: number;
+  image_url: string;
+  is_active: boolean;
+  created_at: string;
+  categories?: {
+    name: string;
+  };
+}
 
 export default function DashboardProductsPage() {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [editingProduct, setEditingProduct] = useState<typeof initialProducts[0] | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<number | 'All'>('All');
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isAddingProduct, setIsAddingProduct] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
+  const [sellerName, setSellerName] = useState('Seller');
+  const [storeName, setStoreName] = useState('My Store');
+
+  // Fetch products and categories on mount
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [productsData, categoriesData] = await Promise.all([
+          getProducts(),
+          getCategories()
+        ]);
+        
+        setProducts(productsData);
+        setCategories(categoriesData || []);
+        
+        // Get seller info from cookie
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+          const [name, value] = cookie.trim().split('=');
+          if (name === 'seller_name') {
+            setSellerName(value);
+          }
+          if (name === 'store_name') {
+            setStoreName(value);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    fetchData();
+  }, []);
 
   // Filter products
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+    const matchesCategory = selectedCategory === 'All' || product.category_id === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   // Handle edit
-  const handleEdit = (product: typeof initialProducts[0]) => {
+  const handleEdit = (product: Product) => {
     setEditingProduct({ ...product });
   };
 
   // Save edit
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (editingProduct) {
-      setProducts(products.map(p => p.id === editingProduct.id ? editingProduct : p));
-      setEditingProduct(null);
+      startTransition(async () => {
+        const formData = new FormData();
+        formData.append('name', editingProduct.name);
+        formData.append('description', editingProduct.description);
+        formData.append('price', editingProduct.price.toString());
+        formData.append('stock_quantity', editingProduct.stock_quantity.toString());
+        formData.append('category_id', editingProduct.category_id.toString());
+        formData.append('image_url', editingProduct.image_url || '');
+        
+        const result = await addProduct(formData);
+        if (result.success) {
+          // Refresh products
+          const productsData = await getProducts();
+          setProducts(productsData);
+        }
+        setEditingProduct(null);
+      });
     }
   };
 
@@ -104,9 +124,15 @@ export default function DashboardProductsPage() {
   };
 
   // Delete product
-  const handleDelete = (id: number) => {
+  const handleDelete = async (productId: number) => {
     if (confirm('Are you sure you want to delete this product?')) {
-      setProducts(products.filter(p => p.id !== id));
+      startTransition(async () => {
+        const result = await deleteProduct(productId);
+        if (result.success) {
+          // Remove from local state
+          setProducts(products.filter(p => p.product_id !== productId));
+        }
+      });
     }
   };
 
@@ -114,25 +140,39 @@ export default function DashboardProductsPage() {
   const handleAddProduct = () => {
     setIsAddingProduct(true);
     setEditingProduct({
-      id: Date.now(),
+      product_id: Date.now(),
       name: '',
       description: '',
       price: 0,
-      stock: 0,
-      category: 'Pottery',
+      stock_quantity: 0,
+      category_id: categories[0]?.category_id || 1,
       image_url: '',
-      status: 'active',
-      rating: 0,
-      reviews: 0,
+      is_active: true,
+      created_at: new Date().toISOString(),
     });
   };
 
   // Save new product
-  const handleSaveNew = () => {
+  const handleSaveNew = async () => {
     if (editingProduct) {
-      setProducts([editingProduct, ...products]);
-      setEditingProduct(null);
-      setIsAddingProduct(false);
+      startTransition(async () => {
+        const formData = new FormData();
+        formData.append('name', editingProduct.name);
+        formData.append('description', editingProduct.description);
+        formData.append('price', editingProduct.price.toString());
+        formData.append('stock_quantity', editingProduct.stock_quantity.toString());
+        formData.append('category_id', editingProduct.category_id.toString());
+        formData.append('image_url', editingProduct.image_url || '');
+        
+        const result = await addProduct(formData);
+        if (result.success) {
+          // Refresh products
+          const productsData = await getProducts();
+          setProducts(productsData);
+        }
+        setEditingProduct(null);
+        setIsAddingProduct(false);
+      });
     }
   };
 
@@ -142,15 +182,31 @@ export default function DashboardProductsPage() {
     setIsAddingProduct(false);
   };
 
+  // Get category name by ID
+  const getCategoryName = (categoryId: number) => {
+    const category = categories.find(c => c.category_id === categoryId);
+    return category?.name || 'Unknown';
+  };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout sellerName={sellerName} storeName={storeName}>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
-    <DashboardLayout sellerName="Maria" storeName="Handcrafted Haven">
+    <DashboardLayout sellerName={sellerName} storeName={storeName}>
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h2 className="text-2xl font-bold text-secondary-900">My Products</h2>
           <p className="text-secondary-500">Manage your product inventory</p>
         </div>
-        <Button onClick={handleAddProduct} variant="primary">
+        <Button onClick={handleAddProduct} variant="primary" disabled={isPending}>
           <Plus className="w-4 h-4 mr-2" />
           Add New Product
         </Button>
@@ -169,18 +225,29 @@ export default function DashboardProductsPage() {
           />
         </div>
         <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setSelectedCategory('All')}
+            className={cn(
+              'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+              selectedCategory === 'All'
+                ? 'bg-primary-700 text-white'
+                : 'bg-white text-secondary-600 hover:bg-secondary-50 border border-secondary-200'
+            )}
+          >
+            All
+          </button>
           {categories.map((category) => (
             <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
+              key={category.category_id}
+              onClick={() => setSelectedCategory(category.category_id)}
               className={cn(
                 'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-                selectedCategory === category
+                selectedCategory === category.category_id
                   ? 'bg-primary-700 text-white'
                   : 'bg-white text-secondary-600 hover:bg-secondary-50 border border-secondary-200'
               )}
             >
-              {category}
+              {category.name}
             </button>
           ))}
         </div>
@@ -189,7 +256,7 @@ export default function DashboardProductsPage() {
       {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProducts.map((product) => (
-          <Card key={product.id} className="bg-white overflow-hidden hover:shadow-lg transition-shadow">
+          <Card key={product.product_id} className="bg-white overflow-hidden hover:shadow-lg transition-shadow">
             {/* Product Image */}
             <div className="aspect-video bg-secondary-100 relative">
               {product.image_url ? (
@@ -204,10 +271,10 @@ export default function DashboardProductsPage() {
                 </div>
               )}
               <Badge 
-                variant={product.status === 'active' ? 'success' : 'default'} 
+                variant={product.is_active ? 'success' : 'default'} 
                 className="absolute top-3 right-3"
               >
-                {product.status}
+                {product.is_active ? 'Active' : 'Inactive'}
               </Badge>
             </div>
 
@@ -216,7 +283,7 @@ export default function DashboardProductsPage() {
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <h3 className="font-semibold text-secondary-900 line-clamp-1">{product.name}</h3>
-                  <p className="text-sm text-secondary-500">{product.category}</p>
+                  <p className="text-sm text-secondary-500">{product.categories?.name || getCategoryName(product.category_id)}</p>
                 </div>
                 <p className="text-lg font-bold text-primary-700">${product.price.toFixed(2)}</p>
               </div>
@@ -225,12 +292,7 @@ export default function DashboardProductsPage() {
 
               {/* Stats */}
               <div className="flex items-center justify-between text-sm text-secondary-500 mb-4">
-                <span>Stock: {product.stock}</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-yellow-500">★</span>
-                  <span>{product.rating}</span>
-                  <span>({product.reviews})</span>
-                </div>
+                <span>Stock: {product.stock_quantity}</span>
               </div>
 
               {/* Actions */}
@@ -241,16 +303,17 @@ export default function DashboardProductsPage() {
                   size="sm" 
                   className="flex-1"
                 >
-                  <Edit className="w-4 h-4 mr-1" />
+                  <Tag className="w-4 h-4 mr-1" />
                   Edit
                 </Button>
                 <Button 
-                  onClick={() => handleDelete(product.id)} 
+                  onClick={() => handleDelete(product.product_id)} 
                   variant="ghost" 
                   size="sm"
                   className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  disabled={isPending}
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <X className="w-4 h-4" />
                 </Button>
               </div>
             </CardContent>
@@ -342,8 +405,8 @@ export default function DashboardProductsPage() {
                   <input
                     type="number"
                     min="0"
-                    value={editingProduct.stock}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, stock: parseInt(e.target.value) || 0 })}
+                    value={editingProduct.stock_quantity}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, stock_quantity: parseInt(e.target.value) || 0 })}
                     className="w-full px-4 py-2 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
                     placeholder="0"
                   />
@@ -358,12 +421,12 @@ export default function DashboardProductsPage() {
                 <div className="relative">
                   <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary-400" />
                   <select
-                    value={editingProduct.category}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
+                    value={editingProduct.category_id}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, category_id: parseInt(e.target.value) })}
                     className="w-full pl-10 pr-4 py-2 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 appearance-none bg-white"
                   >
-                    {categories.filter(c => c !== 'All').map((category) => (
-                      <option key={category} value={category}>{category}</option>
+                    {categories.map((category) => (
+                      <option key={category.category_id} value={category.category_id}>{category.name}</option>
                     ))}
                   </select>
                 </div>
@@ -386,20 +449,22 @@ export default function DashboardProductsPage() {
                 </div>
               </div>
 
-              {/* Status */}
-              <div>
-                <label className="block text-sm font-medium text-secondary-700 mb-1">
-                  Status
-                </label>
-                <select
-                  value={editingProduct.status}
-                  onChange={(e) => setEditingProduct({ ...editingProduct, status: e.target.value as 'active' | 'inactive' })}
-                  className="w-full px-4 py-2 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 appearance-none bg-white"
-                >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
+              {/* Status (only for edit) */}
+              {!isAddingProduct && (
+                <div>
+                  <label className="block text-sm font-medium text-secondary-700 mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={editingProduct.is_active ? 'active' : 'inactive'}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, is_active: e.target.value === 'active' })}
+                    className="w-full px-4 py-2 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 appearance-none bg-white"
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             {/* Actions */}
@@ -407,14 +472,20 @@ export default function DashboardProductsPage() {
               <Button 
                 onClick={isAddingProduct ? handleCancelAdd : handleCancelEdit} 
                 variant="outline"
+                disabled={isPending}
               >
                 Cancel
               </Button>
               <Button 
                 onClick={isAddingProduct ? handleSaveNew : handleSaveEdit} 
                 variant="primary"
+                disabled={isPending}
               >
-                <Check className="w-4 h-4 mr-2" />
+                {isPending ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Check className="w-4 h-4 mr-2" />
+                )}
                 {isAddingProduct ? 'Add Product' : 'Save Changes'}
               </Button>
             </div>

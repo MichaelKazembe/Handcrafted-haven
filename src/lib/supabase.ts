@@ -97,7 +97,9 @@ export const db = {
       stock_quantity: number;
       image_url: string;
     }) => {
-      const { data, error } = await supabase
+      // Use service role client to bypass RLS for admin operations
+      const adminClient = createServerClient();
+      const { data, error } = await adminClient
         .from("products")
         .insert(productData)
         .select("*")
@@ -187,6 +189,117 @@ export const db = {
 
       if (error) throw error;
       return data;
+    },
+
+    delete: async (productId: number, sellerId: string) => {
+      // Use service role client to bypass RLS for admin operations
+      const adminClient = createServerClient();
+      const { error } = await adminClient
+        .from("products")
+        .delete()
+        .eq("product_id", productId)
+        .eq("seller_id", sellerId);
+
+      if (error) throw error;
+      return { success: true };
+    },
+  },
+
+  // Stats operations
+  stats: {
+    getSellerStats: async (sellerId: string) => {
+      // Get product count
+      const { data: productsData, error: productsError } = await supabase
+        .from("products")
+        .select("product_id", { count: "exact" })
+        .eq("seller_id", sellerId);
+
+      if (productsError) throw productsError;
+
+      // Get review count and average rating for seller's products
+      const { data: productsWithReviews, error: reviewsError } = await supabase
+        .from("products")
+        .select(`
+          product_id,
+          reviews (
+            review_id,
+            rating
+          )
+        `)
+        .eq("seller_id", sellerId);
+
+      if (reviewsError) throw reviewsError;
+
+      // Calculate stats
+      let totalReviews = 0;
+      let totalRating = 0;
+      let reviewCount = 0;
+
+      productsWithReviews?.forEach((product: any) => {
+        if (product.reviews) {
+          totalReviews += product.reviews.length;
+          product.reviews.forEach((review: any) => {
+            totalRating += review.rating || 0;
+            reviewCount++;
+          });
+        }
+      });
+
+      const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+
+      return {
+        totalProducts: productsData?.length || 0,
+        totalReviews,
+        averageRating: Math.round(averageRating * 10) / 10,
+      };
+    },
+
+    getRecentProducts: async (sellerId: string, limit: number = 5) => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .eq("seller_id", sellerId)
+        .order("created_at", { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return data;
+    },
+
+    getRecentReviews: async (sellerId: string, limit: number = 5) => {
+      // First get seller's products
+      const { data: products, error: productsError } = await supabase
+        .from("products")
+        .select("product_id, name")
+        .eq("seller_id", sellerId);
+
+      if (productsError) throw productsError;
+
+      if (!products || products.length === 0) {
+        return [];
+      }
+
+      const productIds = products.map((p) => p.product_id);
+      const productMap = products.reduce((acc, p) => {
+        acc[p.product_id] = p.name;
+        return acc;
+      }, {} as Record<number, string>);
+
+      // Get reviews for these products
+      const { data: reviews, error: reviewsError } = await supabase
+        .from("reviews")
+        .select("*")
+        .in("product_id", productIds)
+        .order("created_at", { ascending: false })
+        .limit(limit);
+
+      if (reviewsError) throw reviewsError;
+
+      // Add product name to reviews
+      return reviews?.map((review) => ({
+        ...review,
+        product_name: productMap[review.product_id] || "Unknown Product",
+      }));
     },
   },
 };

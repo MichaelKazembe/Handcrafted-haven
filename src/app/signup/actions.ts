@@ -10,7 +10,7 @@ export async function registerSeller(formData: FormData) {
   const lastName = formData.get("lastName") as string;
   const storeName = formData.get("storeName") as string;
   const email = formData.get("email") as string;
-  const phone = formData.get("phone_number") as string;
+  const phoneNumber = formData.get("phone_number") as string;
   const password = formData.get("password") as string;
 
   if (!firstName || !lastName || !storeName || !email || !password) {
@@ -37,7 +37,7 @@ export async function registerSeller(formData: FormData) {
       last_name: lastName,
       store_name: storeName,
       email,
-      phone_number: phone,
+      phone_number: phoneNumber,
       password_hash: hashedPassword,
     });
 

@@ -1,103 +1,50 @@
 import { Suspense } from "react";
 import { Container, Card, Button, Badge } from "@/components/ui";
+import { db } from "@/lib/supabase";
 import Link from "next/link";
 import { Filter, ArrowLeft } from "lucide-react";
 
-// Mock products data - replace with Supabase query
-const products = [
-  {
-    product_id: 1,
-    name: "Hand-Painted Ceramic Mug",
-    price: 35.0,
-    image_url:
-      "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400",
-    store_name: "Maria Pottery",
-    category_name: "Pottery",
-    stock_quantity: 15,
-  },
-  {
-    product_id: 2,
-    name: "Woven Wool Blanket",
-    price: 120.0,
-    image_url:
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400",
-    store_name: "Artisan Weaves",
-    category_name: "Textiles",
-    stock_quantity: 8,
-  },
-  {
-    product_id: 3,
-    name: "Silver Handcrafted Ring",
-    price: 65.0,
-    image_url:
-      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400",
-    store_name: "Gemstone Studio",
-    category_name: "Jewelry",
-    stock_quantity: 20,
-  },
-  {
-    product_id: 4,
-    name: "Abstract Oil Painting",
-    price: 250.0,
-    image_url:
-      "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400",
-    store_name: "Art Gallery",
-    category_name: "Art",
-    stock_quantity: 3,
-  },
-  {
-    product_id: 5,
-    name: "Wooden Cutting Board",
-    price: 55.0,
-    image_url:
-      "https://images.unsplash.com/photo-1594226801341-41427b4e5c22?w=400",
-    store_name: "Woodcraft Masters",
-    category_name: "Home",
-    stock_quantity: 12,
-  },
-  {
-    product_id: 6,
-    name: "Macrame Wall Hanging",
-    price: 85.0,
-    image_url:
-      "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=400",
-    store_name: "Boho Decor",
-    category_name: "Home",
-    stock_quantity: 6,
-  },
-  {
-    product_id: 7,
-    name: "Handmade Leather Journal",
-    price: 45.0,
-    image_url:
-      "https://images.unsplash.com/photo-1544816155-12df9643f363?w=400",
-    store_name: "Craftsman Leather",
-    category_name: "Accessories",
-    stock_quantity: 25,
-  },
-  {
-    product_id: 8,
-    name: "Ceramic Flower Vase",
-    price: 42.0,
-    image_url:
-      "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400",
-    store_name: "Clay Studio",
-    category_name: "Pottery",
-    stock_quantity: 10,
-  },
-];
+// Types
+interface Product {
+  product_id: number;
+  name: string;
+  price: number;
+  image_url: string;
+  stock_quantity: number;
+  categories: {
+    name: string;
+  };
+  sellers: {
+    store_name: string;
+  };
+}
 
-const categories = [
-  "All",
-  "Pottery",
-  "Jewelry",
-  "Textiles",
-  "Art",
-  "Home",
-  "Accessories",
-];
+interface Category {
+  category_id: number;
+  name: string;
+}
 
-function ProductGrid() {
+async function getProducts() {
+  try {
+    const products = await db.products.findAll();
+    return products || [];
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+}
+
+async function getCategories() {
+  try {
+    const categories = await db.categories.findAll();
+    return categories || [];
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+}
+
+function ProductGrid({ products }: { products: Product[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {products.map((product) => (
@@ -105,24 +52,24 @@ function ProductGrid() {
           <Card hover className="h-full">
             <div className="aspect-square overflow-hidden bg-secondary-100">
               <img
-                src={product.image_url}
+                src={product.image_url || "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=400"}
                 alt={product.name}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
             <div className="p-4">
               <p className="text-xs text-primary-600 font-medium mb-1">
-                {product.category_name}
+                {product.categories?.name || 'Uncategorized'}
               </p>
               <h3 className="font-semibold text-secondary-900 mb-1 line-clamp-2">
                 {product.name}
               </h3>
               <p className="text-sm text-secondary-500 mb-2">
-                by {product.store_name}
+                by {product.sellers?.store_name || 'Unknown Seller'}
               </p>
               <div className="flex items-center justify-between">
                 <span className="text-lg font-bold text-primary-700">
-                  ${product.price.toFixed(2)}
+                  ${product.price?.toFixed(2) || '0.00'}
                 </span>
                 {product.stock_quantity <= 5 && (
                   <Badge variant="warning">
@@ -159,7 +106,19 @@ function LoadingSkeleton() {
   );
 }
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  // Fetch products and categories from database
+  const [products, categories] = await Promise.all([
+    getProducts(),
+    getCategories()
+  ]);
+
+  // Add "All" category at the beginning
+  const allCategories = [
+    { category_id: 0, name: "All" },
+    ...categories
+  ];
+
   return (
     <div className="bg-secondary-50 min-h-screen">
       {/* Header */}
@@ -184,13 +143,13 @@ export default function ProductsPage() {
         <Container>
           <div className="py-4 flex flex-wrap items-center gap-2">
             <Filter className="h-5 w-5 text-secondary-400 mr-2" />
-            {categories.map((category) => (
+            {allCategories.map((category) => (
               <Button
-                key={category}
-                variant={category === "All" ? "primary" : "ghost"}
+                key={category.category_id}
+                variant={category.name === "All" ? "primary" : "ghost"}
                 size="sm"
               >
-                {category}
+                {category.name}
               </Button>
             ))}
           </div>
@@ -200,7 +159,7 @@ export default function ProductsPage() {
       {/* Products Grid */}
       <Container className="py-12">
         <Suspense fallback={<LoadingSkeleton />}>
-          <ProductGrid />
+          <ProductGrid products={products} />
         </Suspense>
       </Container>
 
@@ -224,3 +183,4 @@ export default function ProductsPage() {
     </div>
   );
 }
+

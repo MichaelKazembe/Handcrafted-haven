@@ -15,7 +15,7 @@ interface CategoryIconProps {
   className?: string;
 }
 
-const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+const iconMap: Record<string, React.ComponentType<{ size?: number | string; className?: string }>> = {
   jewelry: Gem,
   home: Home,
   pottery: Sparkles,

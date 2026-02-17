@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Container, Card, Input, Button } from '@/components/ui';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { loginSeller } from './actions';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,21 +16,13 @@ export default function LoginPage() {
     setError(null);
 
     const formData = new FormData(event.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
 
-    try {
-      // Simulate authentication - replace with actual Supabase auth
-      if (email && password) {
-        // In production: const { error } = await supabase.auth.signInWithPassword(...)
-        // For demo, just redirect
-        router.push('/dashboard');
-      } else {
-        setError('Please enter email and password');
-      }
-    } catch (err) {
-      setError('Invalid credentials');
-    } finally {
+    // Call the server action
+    const result = await loginSeller(formData);
+
+    // If loginSeller returns something (it means there was an error or no redirect)
+    if (result?.success === false) {
+      setError(result.message);
       setIsLoading(false);
     }
   }

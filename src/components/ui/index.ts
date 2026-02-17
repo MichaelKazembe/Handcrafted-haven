@@ -4,4 +4,5 @@ export { Textarea } from './Textarea';
 export { Card, CardHeader, CardContent, CardFooter } from './Card';
 export { Container } from './Container';
 export { Badge } from './Badge';
+export { StarRating } from './StarRating';
 

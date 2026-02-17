@@ -1,5 +1,7 @@
 import { Hero, CategoryCard, defaultCategories } from '@/components/features';
 import { Container, Button, Card } from '@/components/ui';
+import { ProfileCard } from '@/components/ProfileCard';
+import { CategoryIcon } from '@/components/CategoryIcon';
 import { ArrowRight, Sparkles, Shield, Truck } from 'lucide-react';
 import Link from 'next/link';
 
@@ -103,6 +105,58 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {defaultCategories.map((category) => (
               <CategoryCard key={category.name} {...category} />
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Artisan Spotlight Section */}
+      <section className="py-16 bg-secondary-50">
+        <Container>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-secondary-900 mb-3">
+              Artisan Spotlight
+            </h2>
+            <p className="text-secondary-600 max-w-2xl mx-auto">
+              Meet the makers behind the craft. Discover their story, specialty,
+              and what makes their work unique.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <ProfileCard
+              name="Tom Rickes"
+              storeName="Harper Studio"
+              bio="I craft small-batch ceramic pieces inspired by the warm colors and textures of the desert. Each item is hand-thrown and glazed in my home studio."
+              avatarUrl="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=300"
+              rating={4.8}
+              totalReviews={126}
+              location="Rexburg, ID"
+              specialty="Ceramics"
+            />
+            <ProfileCard
+              name="Ross Smith"
+              storeName="Smith Textiles"
+              bio="I weave traditional patterns with modern techniques, creating unique textile pieces that tell a story. Each weaving is made on my grandmother's loom."
+              avatarUrl="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300"
+              rating={4.9}
+              totalReviews={98}
+              location="St. Anthony, ID"
+              specialty="Textiles"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {['Jewelry', 'Ceramics', 'Textiles', 'Woodwork', 'Paintings', 'Home'].map((category) => (
+              <div
+                key={category}
+                className="flex items-center gap-2 rounded-lg bg-white p-3 border border-secondary-100"
+              >
+                <CategoryIcon category={category} className="text-primary-700" />
+                <span className="text-sm font-medium text-secondary-800">
+                  {category}
+                </span>
+              </div>
             ))}
           </div>
         </Container>

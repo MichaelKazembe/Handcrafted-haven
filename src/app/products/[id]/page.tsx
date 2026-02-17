@@ -79,9 +79,9 @@ const mockProducts: Product[] = [
 ];
 
 interface ProductDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 async function getProductById(id: number): Promise<Product | null> {
@@ -128,7 +128,8 @@ async function getProductById(id: number): Promise<Product | null> {
 export default async function ProductDetailPage({
   params,
 }: ProductDetailPageProps) {
-  const productId = parseInt(params.id, 10);
+  const { id } = await params;
+  const productId = parseInt(id, 10);
 
   if (isNaN(productId)) {
     notFound();

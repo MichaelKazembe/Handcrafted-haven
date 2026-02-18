@@ -154,17 +154,18 @@ CREATE POLICY "Authenticated users can create reviews" ON reviews FOR INSERT WIT
 -- ============================================
 
 -- Storage policies for product images (run if not already set up):
--- INSERT INTO storage.buckets (id, name, public)
--- VALUES ('products', 'products', true)
--- ON CONFLICT (id) DO NOTHING;
+-- First create the bucket if it doesn't exist:
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('products', 'products', true)
+ON CONFLICT (id) DO NOTHING;
 
--- Storage policies (run if not already set up):
--- CREATE POLICY "Public access to product images" ON storage.objects
--- FOR SELECT USING (bucket_id = 'products');
+-- Create storage policies:
+CREATE POLICY "Public access to product images" ON storage.objects
+FOR SELECT USING (bucket_id = 'products');
 
--- CREATE POLICY "Authenticated users can upload product images" ON storage.objects
--- FOR INSERT WITH CHECK (bucket_id = 'products' AND auth.role() = 'authenticated');
+CREATE POLICY "Authenticated users can upload product images" ON storage.objects
+FOR INSERT WITH CHECK (bucket_id = 'products' AND auth.role() = 'authenticated');
 
--- CREATE POLICY "Owners can delete their product images" ON storage.objects
--- FOR DELETE USING (bucket_id = 'products');
+CREATE POLICY "Owners can delete their product images" ON storage.objects
+FOR DELETE USING (bucket_id = 'products');
 

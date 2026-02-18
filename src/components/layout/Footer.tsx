@@ -5,7 +5,6 @@ import { Container } from '@/components/ui';
 const footerLinks = {
   shop: [
     { name: 'All Products', href: '/products' },
-    { name: 'Categories', href: '/products#categories' },
     { name: 'New Arrivals', href: '/products?sort=newest' },
     { name: 'Featured', href: '/products?sort=featured' },
   ],
@@ -32,7 +31,7 @@ const footerLinks = {
 const socialLinks = [
   { name: 'Facebook', icon: Facebook, href: 'https://facebook.com' },
   { name: 'Instagram', icon: Instagram, href: 'https://instagram.com' },
-  { name: 'Twitter', icon: Twitter, href: 'https://twitter.com' },
+  { name: 'Twitter', icon: Twitter, href: 'https://x.com' },
 ];
 
 export function Footer() {
@@ -166,7 +165,7 @@ export function Footer() {
             </div>
 
             {/* Newsletter Signup */}
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <input
                 type="email"
                 placeholder="Enter your email"
@@ -175,7 +174,7 @@ export function Footer() {
               <button className="px-4 py-2 bg-primary-700 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium">
                 Subscribe
               </button>
-            </div>
+            </div> */}
 
             {/* Copyright */}
             <div className="text-sm text-secondary-500">

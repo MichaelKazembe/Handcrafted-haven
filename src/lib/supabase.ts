@@ -147,6 +147,23 @@ export const db = {
       if (error) throw error;
       return data;
     },
+
+    update: async (sellerId: string, sellerData: {
+      first_name?: string;
+      last_name?: string;
+      store_name?: string;
+      phone_number?: string;
+    }) => {
+      const { data, error } = await supabase
+        .from("sellers")
+        .update(sellerData)
+        .eq("seller_id", sellerId)
+        .select("*")
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
   },
 
   // Categories operations

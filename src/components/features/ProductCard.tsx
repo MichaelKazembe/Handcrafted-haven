@@ -66,10 +66,11 @@ export function ProductCard({ product }: ProductCardProps) {
           </Link>
         </h3>
 
+
         {/* Store */}
         {product.store_name && (
           <p className="text-sm text-secondary-500 mb-2">
-            by {product.store_name}
+            by <Link href={`/profile/${product.seller_id}`} className="hover:text-primary-700 transition-colors">{product.store_name}</Link>
           </p>
         )}
 

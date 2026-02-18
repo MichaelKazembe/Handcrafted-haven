@@ -13,6 +13,21 @@ export interface Seller {
   created_at?: string;
 }
 
+export interface SellerProfile {
+  seller_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  store_name: string;
+  phone_number?: string;
+  created_at?: string;
+  // Computed fields
+  totalProducts?: number;
+  totalSales?: number;
+  totalReviews?: number;
+  averageRating?: number;
+}
+
 export interface Category {
   category_id: number;
   name: string;

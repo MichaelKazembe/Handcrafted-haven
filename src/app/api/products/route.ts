@@ -2,6 +2,30 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { db } from "@/lib/supabase";
 
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const sellerId = searchParams.get("seller_id");
+
+    let products;
+    if (sellerId) {
+      // Fetch products for a specific seller
+      products = await db.products.findBySeller(sellerId);
+    } else {
+      // Fetch all active products
+      products = await db.products.findAll();
+    }
+
+    return NextResponse.json(products || []);
+  } catch (error: any) {
+    console.error("Error fetching products:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to fetch products" },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Check authentication

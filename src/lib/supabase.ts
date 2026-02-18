@@ -22,6 +22,77 @@ export const createServerClient = () => {
   return createClient(supabaseUrl, serviceRoleKey);
 };
 
+// Storage helper functions
+export const storage = {
+  // Upload product image
+  uploadProductImage: async (file: File, sellerId: string): Promise<string | null> => {
+    if (!isSupabaseConfigured) {
+      console.warn("Supabase is not configured");
+      return null;
+    }
+
+    try {
+      // Generate unique file name
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${sellerId}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+      
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('products')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (error) {
+        console.error('Error uploading image:', error);
+        return null;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('products')
+        .getPublicUrl(fileName);
+
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return null;
+    }
+  },
+
+  // Delete product image
+  deleteProductImage: async (imageUrl: string): Promise<boolean> => {
+    if (!isSupabaseConfigured) {
+      return false;
+    }
+
+    try {
+      // Extract file path from URL
+      const urlParts = imageUrl.split('/storage/v1/object/public/');
+      if (urlParts.length < 2) {
+        return false;
+      }
+      
+      const filePath = urlParts[1];
+      
+      const { error } = await supabase.storage
+        .from('products')
+        .remove([filePath]);
+
+      if (error) {
+        console.error('Error deleting image:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      return false;
+    }
+  },
+};
+
 // Database query helper functions using Supabase
 export const db = {
   // Sellers operations

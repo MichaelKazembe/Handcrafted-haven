@@ -62,15 +62,15 @@ export default function DashboardProductsPage() {
         setProducts(productsData);
         setCategories(categoriesData || []);
         
-        // Get seller info from cookie
-        const cookies = document.cookie.split(';');
-        for (const cookie of cookies) {
-          const [name, value] = cookie.trim().split('=');
-          if (name === 'seller_name') {
-            setSellerName(value);
+        // Fetch seller info from the API
+        const sellerResponse = await fetch('/api/seller-info');
+        if (sellerResponse.ok) {
+          const sellerData = await sellerResponse.json();
+          if (sellerData.first_name) {
+            setSellerName(sellerData.first_name);
           }
-          if (name === 'store_name') {
-            setStoreName(value);
+          if (sellerData.store_name) {
+            setStoreName(sellerData.store_name);
           }
         }
       } catch (error) {

@@ -43,6 +43,23 @@ export async function loginSeller(formData: FormData) {
       maxAge: 60 * 60 * 24 * 7, // 1 week
     });
 
+    // Set seller name and store name cookies for dashboard display
+    const sellerData = await db.sellers.findById(seller.seller_id);
+    if (sellerData) {
+      cookieStore.set("seller_name", sellerData.first_name || "", {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+      });
+      cookieStore.set("store_name", sellerData.store_name || "", {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+      });
+    }
+
     redirect("/dashboard");
   } catch (error) {
     // Re-throw redirect errors so they can be handled properly

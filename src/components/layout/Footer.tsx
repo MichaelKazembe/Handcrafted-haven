@@ -51,7 +51,7 @@ export function Footer() {
                   Handcrafted Haven
                 </span>
               </Link>
-              <p className="text-secondary-400 mb-6 max-w-sm">
+              <p className="text-secondary-500 mb-6 max-w-sm">
                 Celebrating the artistry and craftsmanship of local artisans,
                 bringing unique handmade treasures to your home.
               </p>
@@ -156,7 +156,7 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-secondary-400 hover:text-primary-400 transition-colors duration-200"
+                  className="text-secondary-500 hover:text-primary-400 transition-colors duration-200"
                   aria-label={social.name}
                 >
                   <social.icon className="h-5 w-5" />

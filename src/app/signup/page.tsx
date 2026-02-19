@@ -143,7 +143,7 @@ export default function SignupPage() {
           </div>
 
           <div className="mt-4 text-center">
-            <Link href="/" className="text-sm text-secondary-400 hover:text-secondary-600">
+            <Link href="/" className="text-sm text-secondary-500 hover:text-secondary-700">
               ← Back to Home
             </Link>
           </div>

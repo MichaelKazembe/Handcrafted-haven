@@ -55,7 +55,7 @@ export default function LoginPage() {
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-400" aria-hidden="true" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-500" aria-hidden="true" />
                 <input
                   id="email"
                   name="email"
@@ -73,7 +73,7 @@ export default function LoginPage() {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-400" aria-hidden="true" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-secondary-500" aria-hidden="true" />
                 <input
                   id="password"
                   name="password"
@@ -108,7 +108,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-4 text-center">
-            <Link href="/" className="text-sm text-secondary-400 hover:text-secondary-600">
+            <Link href="/" className="text-sm text-secondary-500 hover:text-secondary-700">
               &#x2190; Back to Home
             </Link>
           </div>

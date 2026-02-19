@@ -156,209 +156,210 @@ export default function SellerProfilePage() {
   const fullName =
     `${profile.first_name || ""} ${profile.last_name || ""}`.trim();
 
-return (
-  <div className="min-h-screen bg-secondary-50">
-    {/* Header with cover image */}
-    <div className="relative h-48 md:h-64 bg-gradient-to-r from-primary-500 to-primary-700">
-      <div className="absolute inset-0 bg-black/20"></div>
-    </div>
-
-    <div className="max-w-6xl mx-auto px-4 -mt-20">
-      {/* Main profile section */}
-      <Card className="bg-white shadow-lg p-6 md:p-8 mb-6">
-        <div className="flex flex-col md:flex-row gap-6 items-start">
-          
-          {/* Profile picture */}
-          <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-primary-100 flex items-center justify-center">
-            {profile.first_name ? (
-              <span className="text-4xl md:text-5xl font-bold text-primary-600">
-                {profile.first_name.charAt(0).toUpperCase()}
-              </span>
-            ) : (
-              <span className="text-4xl md:text-5xl font-bold text-primary-600">
-                {profile.store_name?.charAt(0).toUpperCase()}
-              </span>
-            )}
-          </div>
-
-          {/* Main information */}
-          <div className="flex-1">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-              
-              {/* Left content */}
-              <div className="flex-1">
-                {isEditing ? (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-secondary-700 mb-1">
-                          First Name
-                        </label>
-                        <input
-                          type="text"
-                          name="first_name"
-                          value={formData.first_name}
-                          onChange={handleInputChange}
-                          className="w-full border border-secondary-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-secondary-700 mb-1">
-                          Last Name
-                        </label>
-                        <input
-                          type="text"
-                          name="last_name"
-                          value={formData.last_name}
-                          onChange={handleInputChange}
-                          className="w-full border border-secondary-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-secondary-700 mb-1">
-                        Store Name
-                      </label>
-                      <input
-                        type="text"
-                        name="store_name"
-                        value={formData.store_name}
-                        onChange={handleInputChange}
-                        className="w-full border border-secondary-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-secondary-700 mb-1">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        name="phone_number"
-                        value={formData.phone_number}
-                        onChange={handleInputChange}
-                        className="w-full border border-secondary-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-secondary-700 mb-1">
-                        Email (read-only)
-                      </label>
-                      <input
-                        type="email"
-                        value={profile.email || ""}
-                        disabled
-                        className="w-full border border-secondary-200 rounded-lg px-4 py-2 bg-secondary-50 text-secondary-500"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <h1 className="text-2xl md:text-3xl font-bold text-secondary-900 mb-1">
-                      {profile.store_name}
-                    </h1>
-
-                    {fullName && (
-                      <p className="text-secondary-600 mb-3">{fullName}</p>
-                    )}
-
-                    <p className="text-secondary-600 mb-3">{profile.email}</p>
-
-                    {profile.phone_number && (
-                      <div className="flex items-center gap-2 text-sm text-secondary-600 mb-2">
-                        <Phone className="h-4 w-4" />
-                        {profile.phone_number}
-                      </div>
-                    )}
-
-                    {profile.created_at && (
-                      <div className="flex items-center gap-2 text-sm text-secondary-500">
-                        <Calendar className="h-4 w-4" />
-                        Joined{" "}
-                        {new Date(profile.created_at).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-
-              {/* Action buttons */}
-              <div className="flex gap-3">
-                {isEditing ? (
-                  <>
-                    <Button onClick={handleSave} variant="primary">
-                      Save Changes
-                    </Button>
-                    <Button onClick={handleCancel} variant="secondary">
-                      Cancel
-                    </Button>
-                  </>
-                ) : (
-                  <Button onClick={() => setIsEditing(true)} variant="primary">
-                    Edit Profile
-                  </Button>
-                )}
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-      </Card>
-
-      {/* Stats grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
-        <Card className="bg-white p-6 text-center">
-          <div className="text-3xl font-bold text-primary-600">
-            {profile.totalProducts || 0}
-          </div>
-          <div className="text-secondary-600 mt-1">Products</div>
-        </Card>
-
-        <Card className="bg-white p-6 text-center">
-          <div className="flex items-center justify-center gap-1">
-            <span className="text-3xl font-bold text-yellow-500">
-              {profile.averageRating || 0}
-            </span>
-            <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
-          </div>
-          <div className="text-secondary-600 mt-1">Average Rating</div>
-        </Card>
-
-        <Card className="bg-white p-6 text-center">
-          <div className="text-3xl font-bold text-accent-600">
-            {profile.totalReviews || 0}
-          </div>
-          <div className="text-secondary-600 mt-1">Reviews</div>
-        </Card>
+  return (
+    <div className="min-h-screen bg-secondary-50">
+      {/* Header with cover image */}
+      <div className="relative h-48 md:h-64 bg-gradient-to-r from-primary-500 to-primary-700">
+        <div className="absolute inset-0 bg-black/20"></div>
       </div>
 
-      {/* Public profile */}
-      <Card className="bg-white p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-secondary-900">
-              Your Public Profile
-            </h2>
-            <p className="text-secondary-600 text-sm">
-              Share this link with customers to showcase your shop
-            </p>
+      <div className="max-w-6xl mx-auto px-4 -mt-20">
+        {/* Main profile section */}
+        <Card className="bg-white shadow-lg p-6 md:p-8 mb-6">
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            {/* Profile picture */}
+            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-primary-100 flex items-center justify-center">
+              {profile.first_name ? (
+                <span className="text-4xl md:text-5xl font-bold text-primary-600">
+                  {profile.first_name.charAt(0).toUpperCase()}
+                </span>
+              ) : (
+                <span className="text-4xl md:text-5xl font-bold text-primary-600">
+                  {profile.store_name?.charAt(0).toUpperCase()}
+                </span>
+              )}
+            </div>
+
+            {/* Main information */}
+            <div className="flex-1">
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                {/* Left content */}
+                <div className="flex-1">
+                  {isEditing ? (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-secondary-700 mb-1">
+                            First Name
+                          </label>
+                          <input
+                            type="text"
+                            name="first_name"
+                            value={formData.first_name}
+                            onChange={handleInputChange}
+                            className="w-full border border-secondary-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-secondary-700 mb-1">
+                            Last Name
+                          </label>
+                          <input
+                            type="text"
+                            name="last_name"
+                            value={formData.last_name}
+                            onChange={handleInputChange}
+                            className="w-full border border-secondary-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-secondary-700 mb-1">
+                          Store Name
+                        </label>
+                        <input
+                          type="text"
+                          name="store_name"
+                          value={formData.store_name}
+                          onChange={handleInputChange}
+                          className="w-full border border-secondary-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-secondary-700 mb-1">
+                          Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          name="phone_number"
+                          value={formData.phone_number}
+                          onChange={handleInputChange}
+                          className="w-full border border-secondary-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-secondary-700 mb-1">
+                          Email (read-only)
+                        </label>
+                        <input
+                          type="email"
+                          value={profile.email || ""}
+                          disabled
+                          className="w-full border border-secondary-200 rounded-lg px-4 py-2 bg-secondary-50 text-secondary-500"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <h1 className="text-2xl md:text-3xl font-bold text-secondary-900 mb-1">
+                        {profile.store_name}
+                      </h1>
+
+                      {fullName && (
+                        <p className="text-secondary-600 mb-3">{fullName}</p>
+                      )}
+
+                      <p className="text-secondary-600 mb-3">{profile.email}</p>
+
+                      {profile.phone_number && (
+                        <div className="flex items-center gap-2 text-sm text-secondary-600 mb-2">
+                          <Phone className="h-4 w-4" />
+                          {profile.phone_number}
+                        </div>
+                      )}
+
+                      {profile.created_at && (
+                        <div className="flex items-center gap-2 text-sm text-secondary-500">
+                          <Calendar className="h-4 w-4" />
+                          Joined{" "}
+                          {new Date(profile.created_at).toLocaleDateString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            },
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex gap-3 w-auto">
+                  {isEditing ? (
+                    <>
+                      <Button onClick={handleSave} variant="primary">
+                        Save Changes
+                      </Button>
+                      <Button onClick={handleCancel} variant="secondary">
+                        Cancel
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={() => setIsEditing(true)}
+                      variant="primary"
+                    >
+                      Edit Profile
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
+        </Card>
 
-          <Link href={`/profile/${profile.seller_id}`}>
-            <Button variant="outline">View Public Profile</Button>
-          </Link>
+        {/* Stats grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
+          <Card className="bg-white p-6 text-center">
+            <div className="text-3xl font-bold text-primary-600">
+              {profile.totalProducts || 0}
+            </div>
+            <div className="text-secondary-600 mt-1">Products</div>
+          </Card>
+
+          <Card className="bg-white p-6 text-center">
+            <div className="flex items-center justify-center gap-1">
+              <span className="text-3xl font-bold text-yellow-500">
+                {profile.averageRating || 0}
+              </span>
+              <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
+            </div>
+            <div className="text-secondary-600 mt-1">Average Rating</div>
+          </Card>
+
+          <Card className="bg-white p-6 text-center">
+            <div className="text-3xl font-bold text-accent-600">
+              {profile.totalReviews || 0}
+            </div>
+            <div className="text-secondary-600 mt-1">Reviews</div>
+          </Card>
         </div>
-      </Card>
 
+        {/* Public profile */}
+        <Card className="bg-white p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-secondary-900">
+                Your Public Profile
+              </h2>
+              <p className="text-secondary-600 text-sm">
+                Share this link with customers to showcase your shop
+              </p>
+            </div>
+
+            <Link href={`/profile/${profile.seller_id}`}>
+              <Button variant="outline">View Public Profile</Button>
+            </Link>
+          </div>
+        </Card>
+      </div>
     </div>
-  </div>
-);
+  );
 }

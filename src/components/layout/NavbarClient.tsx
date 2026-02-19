@@ -103,6 +103,9 @@ export function NavbarClient({ sellerName, isLoggedIn }: NavbarClientProps) {
               type="button"
               className="text-secondary-600 hover:text-secondary-900 p-2"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -116,6 +119,7 @@ export function NavbarClient({ sellerName, isLoggedIn }: NavbarClientProps) {
 
       {/* Mobile Navigation */}
       <div
+        id="mobile-menu"
         className={cn(
           'md:hidden border-t border-secondary-200',
           mobileMenuOpen ? 'block' : 'hidden'

@@ -28,11 +28,15 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
           <Link
             href={`/products/${product.product_id}`}
+            aria-label={`View ${product.name} details`}
             className="bg-white text-secondary-900 p-2 rounded-full hover:bg-primary-700 hover:text-white transition-colors"
           >
             <Eye className="h-5 w-5" />
           </Link>
-          <button className="bg-white text-secondary-900 p-2 rounded-full hover:bg-primary-700 hover:text-white transition-colors">
+          <button 
+            aria-label="Add to wishlist" 
+            className="bg-white text-secondary-900 p-2 rounded-full hover:bg-primary-700 hover:text-white transition-colors"
+          >
             <Heart className="h-5 w-5" />
           </button>
         </div>

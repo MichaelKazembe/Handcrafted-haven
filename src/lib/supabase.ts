@@ -154,7 +154,9 @@ export const db = {
       store_name?: string;
       phone_number?: string;
     }) => {
-      const { data, error } = await supabase
+      // Use service role client to bypass RLS for admin operations
+      const adminClient = createServerClient();
+      const { data, error } = await adminClient
         .from("sellers")
         .update(sellerData)
         .eq("seller_id", sellerId)

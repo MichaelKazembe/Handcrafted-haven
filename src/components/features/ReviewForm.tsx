@@ -49,7 +49,7 @@ export function ReviewForm({ productId, onSubmitReview }: ReviewFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-secondary-700 mb-2">
           Your Rating
         </label>
         <StarRating
@@ -61,7 +61,7 @@ export function ReviewForm({ productId, onSubmitReview }: ReviewFormProps) {
       </div>
 
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="name" className="block text-sm font-medium text-secondary-700 mb-1">
           Name
         </label>
         <Input
@@ -75,7 +75,7 @@ export function ReviewForm({ productId, onSubmitReview }: ReviewFormProps) {
       </div>
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="email" className="block text-sm font-medium text-secondary-700 mb-1">
           Email
         </label>
         <Input
@@ -89,7 +89,7 @@ export function ReviewForm({ productId, onSubmitReview }: ReviewFormProps) {
       </div>
 
       <div>
-        <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="comment" className="block text-sm font-medium text-secondary-700 mb-1">
           Your Review (Optional)
         </label>
         <Textarea

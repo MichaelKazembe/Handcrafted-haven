@@ -5,17 +5,20 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
 // Check if Supabase is configured
-export const isSupabaseConfigured = supabaseUrl && supabaseAnonKey && supabaseUrl.startsWith('http');
+export const isSupabaseConfigured =
+  supabaseUrl && supabaseAnonKey && supabaseUrl.startsWith("http");
 
 // Create Supabase client (with fallback for unconfigured state)
-export const supabase = isSupabaseConfigured 
+export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey)
-  : createClient('https://placeholder.supabase.co', 'placeholder-key');
+  : createClient("https://placeholder.supabase.co", "placeholder-key");
 
 // Helper function for server-side operations with service role
 // Note: Only use this in server actions where you need admin privileges
 export const createServerClient = () => {
-  const serviceRoleKey = process.env.STORAGE_SUPABASE_SERVICE_ROLE_KEY;
+  const serviceRoleKey =
+    process.env.STORAGE_SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!serviceRoleKey) {
     throw new Error("Service role key is not configured");
   }
@@ -25,7 +28,10 @@ export const createServerClient = () => {
 // Storage helper functions
 export const storage = {
   // Upload product image
-  uploadProductImage: async (file: File, sellerId: string): Promise<string | null> => {
+  uploadProductImage: async (
+    file: File,
+    sellerId: string,
+  ): Promise<string | null> => {
     if (!isSupabaseConfigured) {
       console.warn("Supabase is not configured");
       return null;
@@ -33,30 +39,30 @@ export const storage = {
 
     try {
       // Generate unique file name
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split(".").pop();
       const fileName = `${sellerId}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-      
+
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
-        .from('products')
+        .from("products")
         .upload(fileName, file, {
-          cacheControl: '3600',
+          cacheControl: "3600",
           upsert: false,
         });
 
       if (error) {
-        console.error('Error uploading image:', error);
+        console.error("Error uploading image:", error);
         return null;
       }
 
       // Get public URL
       const { data: urlData } = supabase.storage
-        .from('products')
+        .from("products")
         .getPublicUrl(fileName);
 
       return urlData.publicUrl;
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
       return null;
     }
   },
@@ -69,25 +75,25 @@ export const storage = {
 
     try {
       // Extract file path from URL
-      const urlParts = imageUrl.split('/storage/v1/object/public/');
+      const urlParts = imageUrl.split("/storage/v1/object/public/");
       if (urlParts.length < 2) {
         return false;
       }
-      
+
       const filePath = urlParts[1];
-      
+
       const { error } = await supabase.storage
-        .from('products')
+        .from("products")
         .remove([filePath]);
 
       if (error) {
-        console.error('Error deleting image:', error);
+        console.error("Error deleting image:", error);
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error('Error deleting image:', error);
+      console.error("Error deleting image:", error);
       return false;
     }
   },
@@ -148,12 +154,15 @@ export const db = {
       return data;
     },
 
-    update: async (sellerId: string, sellerData: {
-      first_name?: string;
-      last_name?: string;
-      store_name?: string;
-      phone_number?: string;
-    }) => {
+    update: async (
+      sellerId: string,
+      sellerData: {
+        first_name?: string;
+        last_name?: string;
+        store_name?: string;
+        phone_number?: string;
+      },
+    ) => {
       // Use service role client to bypass RLS for admin operations
       const adminClient = createServerClient();
       const { data, error } = await adminClient
@@ -314,13 +323,15 @@ export const db = {
       // Get review count and average rating for seller's products
       const { data: productsWithReviews, error: reviewsError } = await supabase
         .from("products")
-        .select(`
+        .select(
+          `
           product_id,
           reviews (
             review_id,
             rating
           )
-        `)
+        `,
+        )
         .eq("seller_id", sellerId);
 
       if (reviewsError) throw reviewsError;
@@ -375,10 +386,13 @@ export const db = {
       }
 
       const productIds = products.map((p) => p.product_id);
-      const productMap = products.reduce((acc, p) => {
-        acc[p.product_id] = p.name;
-        return acc;
-      }, {} as Record<number, string>);
+      const productMap = products.reduce(
+        (acc, p) => {
+          acc[p.product_id] = p.name;
+          return acc;
+        },
+        {} as Record<number, string>,
+      );
 
       // Get reviews for these products
       const { data: reviews, error: reviewsError } = await supabase
